@@ -56,7 +56,7 @@
   <input type="text" id="narration" placeholder="Description" required>
 
     <label>Transaction Flow</label>
-  <select id="From/to" required>
+  <select id="deposti/withdraw" required>
     <option value="">Select</option>
     <option value="Deposit">Deposit</option>
     <option value="Withdraw">Withdraw</option>
@@ -148,6 +148,7 @@
     const data = {
       date: document.getElementById("date").value,
       narration: document.getElementById("narration").value,
+      dep_wit: deposti/withdraw.value,
       trtype: trtype.value,
       from_to: trtype.value === "cash" ? "Cash" : fromTo.value,
       amount: document.getElementById("amount").value
@@ -176,5 +177,6 @@
 
 </body>
 </html>
+
 
 
