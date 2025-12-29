@@ -40,7 +40,7 @@ document.getElementById("expenseForm").addEventListener("submit", async function
   console.log("Submitting:", data);
 
   try {
-    await fetch("https://bhaskumar.app.n8n.cloud/webhook/monthly-expences", {
+    await fetch("https://bhaskumar.app.n8n.cloud/webhook-test/monthly-expences", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -57,3 +57,4 @@ document.getElementById("expenseForm").addEventListener("submit", async function
 
 </body>
 </html>
+
