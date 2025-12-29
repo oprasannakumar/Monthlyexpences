@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Add Transaction</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Monthly Expense</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 15px;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 12px;
-    }
+    body { font-family: Arial; padding: 15px; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
     input, select, button {
       width: 100%;
       padding: 10px;
@@ -21,61 +15,58 @@
       font-size: 16px;
     }
     button {
-      background-color: #0088cc;
+      margin-top: 20px;
+      background: #0088cc;
       color: white;
       border: none;
-      margin-top: 20px;
-      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-  <h3>Add Transaction</h3>
+<h3>Add Monthly Expense</h3>
 
-  <form id="txnForm">
-    <label>Date</label>
-    <input type="date" name="date" required />
+<form id="expenseForm">
+  <label>Date</label>
+  <input type="date" name="date" required>
 
-    <label>Narration</label>
-    <input type="text" name="narration" required />
+  <label>Narration</label>
+  <input type="text" name="narration" required>
 
-    <label>Transaction Type</label>
-    <select name="trtype" required>
-      <option value="Debit">Debit</option>
-      <option value="Credit">Credit</option>
-    </select>
+  <label>Transaction Type</label>
+  <select name="trtype">
+    <option value="Debit">Debit</option>
+    <option value="Credit">Credit</option>
+  </select>
 
-    <label>Amount</label>
-    <input type="number" name="amount" required />
+  <label>Amount</label>
+  <input type="number" name="amount" required>
 
-    <button type="submit">Submit</button>
-  </form>
+  <button type="submit">Submit</button>
+</form>
 
-  <script>
-    const form = document.getElementById("txnForm");
+<script>
+document.getElementById("expenseForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  const data = {
+    date: e.target.date.value,
+    narration: e.target.narration.value,
+    trtype: e.target.trtype.value,
+    amount: e.target.amount.value
+  };
 
-      const data = {
-        date: form.date.value,
-        narration: form.narration.value,
-        trtype: form.trtype.value,
-        amount: form.amount.value
-      };
+  await fetch("https://bhaskumar.app.n8n.cloud/webhook/monthly-expences", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
 
-      await fetch("PASTE_N8N_WEBHOOK_URL_HERE", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      alert("Transaction submitted successfully!");
-      window.close();
-    });
-  </script>
+  alert("Expense saved successfully!");
+  window.close();
+});
+</script>
 
 </body>
 </html>
