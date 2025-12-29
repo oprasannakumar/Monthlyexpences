@@ -70,9 +70,7 @@ document.getElementById("expenseForm").addEventListener("submit", async function
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Webhook error");
-    }
+  
 
     alert("✅ Expense saved successfully");
     window.close();
@@ -85,6 +83,7 @@ document.getElementById("expenseForm").addEventListener("submit", async function
 
 </body>
 </html>
+
 
 
 
