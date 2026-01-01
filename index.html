@@ -32,7 +32,7 @@
 
   .menu-btn {
     font-size: 22px;
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #ccc;
     border-radius: 6px;
     width: 36px;
@@ -48,7 +48,7 @@
     position: absolute;
     top: 50px;
     left: 0;
-    background: #fff;
+    background: #ffffff;
     border-radius: 6px;
     min-width: 230px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
@@ -81,8 +81,10 @@
     display: block;
   }
 
+  /* 🔥 FORCE EVERYTHING WHITE */
   input,
   select,
+  textarea,
   button {
     width: 100%;
     height: 42px;
@@ -91,8 +93,26 @@
     border-radius: 4px;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    background-color: #ffffff !important;
+    color: #000;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
+  textarea {
+    resize: none;
+  }
+
+  /* 🔥 OVERRIDE DISABLED / READONLY GREY */
+  input:disabled,
+  input[readonly],
+  select:disabled {
+    background-color: #ffffff !important;
+    color: #000;
+    opacity: 1;
+  }
+
+  /* ✅ ONLY CASH AMOUNT GREY */
   .cash-grey {
     background-color: #f0f0f0 !important;
   }
@@ -116,14 +136,14 @@
 
   button {
     margin-top: 15px;
-    background: #007bff;
+    background: #007bff !important;
     color: #fff;
     border: none;
     cursor: pointer;
   }
 
   button:hover {
-    background: #0056b3;
+    background: #0056b3 !important;
   }
 </style>
 </head>
@@ -258,38 +278,6 @@ trtype.addEventListener("change", () => {
   fromTo.style.display = "block";
   fromTo.innerHTML = `<option value="">Select</option>`;
   bankAccounts.forEach(b => fromTo.innerHTML += `<option>${b}</option>`);
-});
-
-/* SUBMIT + WEBHOOK */
-document.getElementById("expenseForm").addEventListener("submit", async e => {
-  e.preventDefault();
-
-  const denominations = {};
-  denomInputs.forEach(i => denominations[i.dataset.val] = i.value || 0);
-
-  const data = {
-    category: "monthly_expense",
-    date: date.value,
-    narration: narration.value,
-    purpose: purpose.value === "Other" ? otherPurpose.value : purpose.value,
-    spent_for: spentFor.value === "Other" ? otherSpentFor.value : spentFor.value,
-    flow_type: document.querySelector('input[name="flow_type"]:checked').value,
-    trtype: trtype.value,
-    from_to: trtype.value === "CASH" ? "Cash" : fromTo.value,
-    amount: amountInput.value,
-    denominations
-  };
-
-  await fetch("https://hook.eu1.make.com/uayw6m2h1u56gz1fuhnyewvh860q8tjy", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-
-  alert("Transaction saved successfully");
-  expenseForm.reset();
-  denominationSection.style.display = "none";
-  amountInput.classList.remove("cash-grey");
 });
 </script>
 
