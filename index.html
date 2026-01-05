@@ -2,383 +2,280 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Grocery Price Manager</title>
+<title>Monthly Transaction</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f5f5f5;
-  padding:20px;
-  display:flex;
-  justify-content:center;
+body{font-family:Arial;background:#f5f5f5;padding:20px}
+form{position:relative;background:#fff;padding:20px;border-radius:8px;max-width:420px;margin:auto;box-shadow:0 0 10px rgba(0,0,0,.1)}
+label{font-weight:bold;margin-top:10px;display:block}
+input,select,textarea,button{
+  width:100%;height:42px;padding:8px 10px;margin-top:5px;
+  border-radius:4px;border:1px solid #ccc;box-sizing:border-box;background:#fff
 }
+textarea{resize:none}
+button{background:#007bff;color:#fff;border:none;margin-top:15px;height:44px}
+button:hover{background:#0056b3}
+.cash-grey{background:#f0f0f0!important}
 
-.container{
-  width:100%;
-  max-width:460px;
-  background:#fff;
-  border-radius:8px;
-  box-shadow:0 0 10px rgba(0,0,0,.1);
-  padding:18px;
-}
+/* Menu */
+.menu-container{position:absolute;top:12px;left:12px;padding:8px}
+.menu-btn{width:36px;height:36px;border:1px solid #ccc;border-radius:6px;background:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.menu-dropdown{display:none;position:absolute;top:50px;left:0;background:#fff;border-radius:6px;min-width:230px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.menu-container:hover .menu-dropdown{display:block}
+.menu-dropdown a{display:block;padding:12px 14px;text-decoration:none;color:#000;border-bottom:1px solid #eee}
+.menu-dropdown a:hover{background:#f0f0f0}
 
-/* Centered form content */
-/* Perfect visual centering */
-.form-center{
-  width: 92%;
-  max-width: 380px;
-  margin-left: auto;
-  margin-right: auto;
-}
+/* Cash grid */
+#denominations{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.denom-row{border:1px solid #ccc;border-radius:6px;padding:10px;text-align:center;font-weight:bold}
+.denom-row input{margin-top:6px;height:36px;text-align:center}
 
-/* Inputs centered optically */
-input{
-  width: 100%;
-  height: 38px;
-  padding: 8px 10px;
-  margin-top: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-/* Suggestions aligned exactly with inputs */
-.form-center .suggestions{
-  width: 100%;
-}
-
-label{
-  font-size:13px;
-  font-weight:600;
-  margin-top:10px;
-  display:block;
-}
-
-input{
-  width:100%;
-  height:38px;
-  padding:8px;
-  margin-top:6px;
-  border-radius:4px;
-  border:1px solid #ccc;
-  font-size:14px;
-}
-
-/* Buttons */
-button{
-  border:none;
-  border-radius:4px;
-  cursor:pointer;
-  font-size:13px;
-}
-.primary-btn{
-  width:100%;
-  height:36px;
-  margin-top:10px;
-}
-.add-item-btn{background:#6f42c1;color:#fff}
-.add-dealer-btn{background:#28a745;color:#fff}
-.cancel-btn{background:#6c757d;color:#fff}
-
-.edit-btn,
-.delete-btn{
-  padding:6px 12px;
-  font-size:14px;
-  height:32px;
-}
-.edit-btn{background:#007bff;color:#fff}
-.delete-btn{background:#dc3545;color:#fff}
-
-/* Suggestions */
-.suggestions{
-  width:100%;
-  border:1px solid #ccc;
-  border-top:none;
-  max-height:150px;
-  overflow-y:auto;
-}
-.suggestions div{
-  padding:8px;
-  cursor:pointer;
-}
-.suggestions div.active,
-.suggestions div:hover{
-  background:#007bff;
-  color:#fff;
-}
-
-/* Info boxes */
-.info-box{
-  margin-top:16px;
-  padding:14px;
-  background:#e9ecef;
-  border-radius:6px;
-}
-
-/* Dealer list */
-.dealer-row{
-  background:#fff;
-  padding:10px;
-  margin-top:10px;
-  border-radius:4px;
-  font-size:13px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-}
-.dealer-info{flex:1}
-.dealer-actions{
-  display:flex;
-  gap:8px;
-  align-items:flex-start;
-}
-
-.hidden{display:none}
+/* Popup */
+.popup{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center}
+.popup-box{background:#fff;width:90%;max-width:380px;border-radius:8px;padding:20px}
+.popup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.popup-card{border:1px solid #ccc;border-radius:6px;padding:10px;text-align:center;font-weight:bold}
+.popup-actions{display:flex;gap:10px;margin-top:20px}
+.popup-actions button{flex:1}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<form id="form">
 
-  <!-- STATUS -->
-  <div id="statusMsg" style="text-align:center;font-size:12px;color:#555;"></div>
+<div class="menu-container">
+  <div class="menu-btn">⋮</div>
+  <div class="menu-dropdown">
+    <a href="https://oprasannakumar.github.io/Financial-Transaction/" target="_blank">Financial Entries</a>
+    <a href="https://oprasannakumar.github.io/SelfTransfer/" target="_blank">Self Transfer</a>
+    <a href="https://oprasannakumar.github.io/LoanTransfer/" target="_blank">Loan Entries</a>
+  </div>
+</div>
 
-  <!-- ITEM SEARCH -->
-  <div id="itemSearchBox">
-    <div class="form-center">
-      <label>Item</label>
-      <input id="itemInput"
-             placeholder="Type or select item..."
-             oninput="filterItems()"
-             onkeydown="handleItemKeys(event)">
-      <div id="itemSuggestions" class="suggestions"></div>
+<h2 style="text-align:center">Monthly Transaction</h2>
+
+<label>Date</label>
+<input type="date" id="date">
+
+<label>Narration</label>
+<input type="text" id="narration">
+
+<label>Purpose</label>
+<select id="purpose">
+  <option value="">Select</option>
+  <option>Business</option>
+  <option>Donation</option>
+  <option>Entertainment</option>
+  <option>Food</option>
+  <option>Grocery</option>
+  <option>Hospital</option>
+  <option>House</option>
+  <option>Income</option>
+  <option>Insurance</option>
+  <option>Loan</option>
+  <option>Medicines</option>
+  <option>Miscellaneous</option>
+  <option>Puja</option>
+  <option>Tax</option>
+  <option>Travelling</option>
+  <option>Utility Bills</option>
+  <option>Water</option>
+  <option>Other</option>
+</select>
+<input id="purposeOther" placeholder="Enter purpose" style="display:none">
+
+<label>Spent For / Earned By</label>
+<select id="spentFor">
+  <option value="">Select</option>
+  <option>Self</option>
+  <option>House</option>
+  <option>Mother</option>
+  <option>Father</option>
+  <option>Family</option>
+  <option>Other</option>
+</select>
+<input id="spentOther" placeholder="Enter name" style="display:none">
+
+<label>Transaction Flow</label>
+<select id="flow_type">
+  <option value="">Select</option>
+  <option value="withdraw">Withdraw</option>
+  <option value="deposit">Deposit</option>
+</select>
+
+<label>Transaction Type</label>
+<select id="trtype">
+  <option value="">Select</option>
+  <option>CASH</option>
+  <option>UPI</option>
+  <option>NET</option>
+  <option>DEBIT</option>
+  <option>CREDIT</option>
+  <option>REWARDS</option>
+</select>
+
+<label id="fromToLbl" style="display:none">From / To</label>
+<select id="fromTo" style="display:none"></select>
+<input id="rewardOther" placeholder="Enter reward source" style="display:none">
+
+<div id="cashBox" style="display:none">
+  <h3>Cash Denominations</h3>
+  <div id="denominations"></div>
+</div>
+
+<label>Amount</label>
+<input id="amount" type="number">
+
+<button type="submit">Submit</button>
+</form>
+
+<!-- Popup -->
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <h3>Confirm Transaction</h3>
+    <div id="popupText"></div>
+    <div id="popupDenoms"></div>
+    <div class="popup-actions">
+      <button onclick="popup.style.display='none'">Cancel</button>
+      <button onclick="send()">Confirm</button>
     </div>
   </div>
-
-  <!-- ACTION BUTTONS -->
-  <div id="actionButtons" class="form-center">
-    <button class="primary-btn add-item-btn" onclick="showAddItem()">➕ Add Item</button>
-    <button id="addDealerBtn"
-            class="primary-btn add-dealer-btn hidden"
-            onclick="showAddDealer()">➕ Add Dealer</button>
-  </div>
-
-  <!-- ADD ITEM -->
-  <div id="addItemBox" class="info-box hidden">
-    <div class="form-center">
-      <label>Item Name</label>
-      <input id="newItemName">
-
-      <label>Dealer</label>
-      <input id="newItemDealer"
-             oninput="filterDealerSuggestions(this,'dealerSug1')"
-             onkeydown="handleDealerKeys(event,'dealerSug1',this)">
-      <div id="dealerSug1" class="suggestions"></div>
-
-      <label>Price</label>
-      <input id="newItemPrice" type="number"
-             onkeydown="handlePriceEnter(event,'item')">
-
-      <button class="primary-btn add-item-btn" onclick="addItem()">Save Item</button>
-      <button class="primary-btn cancel-btn" onclick="cancelForms()">Cancel</button>
-    </div>
-  </div>
-
-  <!-- ADD DEALER -->
-  <div id="addDealerBox" class="info-box hidden">
-    <div class="form-center">
-      <label>Dealer</label>
-      <input id="dealerName"
-             oninput="filterDealerSuggestions(this,'dealerSug2')"
-             onkeydown="handleDealerKeys(event,'dealerSug2',this)">
-      <div id="dealerSug2" class="suggestions"></div>
-
-      <label>Price</label>
-      <input id="dealerPrice" type="number"
-             onkeydown="handlePriceEnter(event,'dealer')">
-
-      <button class="primary-btn add-dealer-btn" onclick="addDealer()">Save Dealer</button>
-      <button class="primary-btn cancel-btn" onclick="cancelForms()">Cancel</button>
-    </div>
-  </div>
-
-  <!-- DEALER LIST -->
-  <div id="details" class="info-box hidden">
-    <div class="form-center">
-      <button class="primary-btn delete-btn" onclick="deleteItem()">🗑 Delete Item</button>
-      <div id="dealerList"></div>
-    </div>
-  </div>
-
 </div>
 
 <script>
-/* -------- JS LOGIC UNCHANGED (WORKING) -------- */
-const API_URL="https://script.google.com/macros/s/AKfycbzRt_ad2rXgZNVO4_Nlumm8EAxN7jcG7gG1y0yKEec7WXnws68ygcAqrhCjRzcmdWzl/exec";
-const API_KEY="9848o22338B!";
+const bankAccounts=["FI","HDFC Old","HDFC New","ICICI","IndusInd","Kotak","RBL","SBI"];
+const creditCards=["Axis Flipkart","Axis MyZone","Axis Neo","HDFC Millennia","ICICI Amazon","SBI BPCL"];
+const rewards=["PHONEPE","AMAZON","FLIPKART","OTHER"];
+const denoms=[500,200,100,50,20,10,5,2,1];
 
-let groceries={},selectedItem="";
-let filteredItems=[],itemIndex=-1;
-let dealerIndex={};
+const dWrap=document.getElementById("denominations");
+denoms.forEach(d=>{
+  dWrap.innerHTML+=`
+  <div class="denom-row">
+    ₹${d}<br>
+    <input type="number" data-d="${d}" value="0">
+  </div>`;
+});
 
-window.onload=()=>fetch(`${API_URL}?key=${API_KEY}`).then(r=>r.json()).then(d=>groceries=d||{});
+purpose.onchange=()=>purposeOther.style.display=purpose.value==="Other"?"block":"none";
+spentFor.onchange=()=>spentOther.style.display=spentFor.value==="Other"?"block":"none";
 
-function handlePriceEnter(e,type){ if(e.key==="Enter"){ e.preventDefault(); type==="item"?addItem():addDealer(); } }
-function showStatus(m){statusMsg.textContent=m;}
-function clearStatus(){setTimeout(()=>statusMsg.textContent="",1500);}
-function save(p,cb){showStatus("Saving...");fetch(API_URL,{method:"POST",body:JSON.stringify({...p,key:API_KEY})}).then(()=>clearStatus());cb();}
+trtype.onchange=()=>{
+  fromTo.innerHTML="";
+  fromTo.style.display="none";
+  fromToLbl.style.display="none";
+  rewardOther.style.display="none";
+  cashBox.style.display="none";
+  amount.readOnly=false;
+  amount.classList.remove("cash-grey");
+  amount.value="";
 
-function filterItems(){
-  const v=itemInput.value.toLowerCase();
-  itemSuggestions.innerHTML=""; filteredItems=[]; itemIndex=-1;
-  if(!v) return;
-  filteredItems=Object.keys(groceries).filter(i=>i.toLowerCase().includes(v));
-  filteredItems.forEach(i=>{
-    const d=document.createElement("div");
-    d.textContent=i; d.onclick=()=>selectItem(i);
-    itemSuggestions.appendChild(d);
-  });
-}
-function handleItemKeys(e){
-  if(!filteredItems.length) return;
-  if(e.key==="ArrowDown"){e.preventDefault();itemIndex=(itemIndex+1)%filteredItems.length;highlight(itemSuggestions,itemIndex);}
-  else if(e.key==="ArrowUp"){e.preventDefault();itemIndex=(itemIndex-1+filteredItems.length)%filteredItems.length;highlight(itemSuggestions,itemIndex);}
-  else if(e.key==="Enter"){e.preventDefault();selectItem(filteredItems[itemIndex===-1?0:itemIndex]);}
-}
-function getAllDealers(){
-  const s=new Set();
-  Object.values(groceries).forEach(a=>a.forEach(d=>s.add(d.dealer)));
-  return [...s];
-}
-function filterDealerSuggestions(input,boxId){
-  const v=input.value.toLowerCase(), box=document.getElementById(boxId);
-  box.innerHTML=""; dealerIndex[boxId]=-1;
-  if(!v) return;
-  getAllDealers().filter(d=>d.toLowerCase().includes(v)).forEach(d=>{
-    const div=document.createElement("div");
-    div.textContent=d; div.onclick=()=>{input.value=d;box.innerHTML="";};
-    box.appendChild(div);
-  });
-}
-function handleDealerKeys(e,boxId,input){
-  const box=document.getElementById(boxId), items=[...box.children];
-  if(!items.length) return;
-  if(e.key==="ArrowDown"){e.preventDefault();dealerIndex[boxId]=(dealerIndex[boxId]+1)%items.length;highlight(box,dealerIndex[boxId]);}
-  else if(e.key==="ArrowUp"){e.preventDefault();dealerIndex[boxId]=(dealerIndex[boxId]-1+items.length)%items.length;highlight(box,dealerIndex[boxId]);}
-  else if(e.key==="Enter"||e.key===" "){e.preventDefault();input.value=items[dealerIndex[boxId]??0].textContent;box.innerHTML="";}
-}
-function highlight(box,i){ [...box.children].forEach((el,idx)=>el.classList.toggle("active",idx===i)); }
-
-function selectItem(item){
-  selectedItem=item; itemInput.value=item; itemSuggestions.innerHTML="";
-  details.classList.remove("hidden"); addDealerBtn.classList.remove("hidden");
-  dealerList.innerHTML="";
-  groceries[item].forEach(d=>{
-    dealerList.innerHTML+=`
-    <div class="dealer-row">
-      <div class="dealer-info">
-        <b>${d.dealer}</b> – ₹${d.price}<br>
-        Date: ${new Date(d.updated||Date.now()).toLocaleDateString("en-GB")}<br>
-        Time: ${new Date(d.updated||Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-      </div>
-      <div class="dealer-actions">
-        <button class="edit-btn" onclick="editDealer('${d.dealer}',${d.price})">✏️</button>
-        <button class="delete-btn" onclick="deleteDealer('${d.dealer}')">🗑</button>
-      </div>
-    </div>`;
-  });
-}
-
-function enterFormMode(){itemSearchBox.classList.add("hidden");actionButtons.classList.add("hidden");details.classList.add("hidden");addDealerBtn.classList.add("hidden");}
-function exitFormMode(){itemSearchBox.classList.remove("hidden");actionButtons.classList.remove("hidden");}
-
-function showAddItem(){enterFormMode();addItemBox.classList.remove("hidden");}
-function showAddDealer(){enterFormMode();addDealerBox.classList.remove("hidden");}
-
-function addItem(){
-  const itemName = newItemName.value.trim();
-  const dealer = newItemDealer.value.trim();
-  const price = Number(newItemPrice.value);
-
-  if(!itemName || !dealer || isNaN(price)) return;
-
-  // Normalize for comparison
-  const itemKey = itemName.toLowerCase();
-  const dealerKey = dealer.toLowerCase();
-
-  // Check if item already exists
-  const existingItemKey = Object.keys(groceries)
-    .find(i => i.toLowerCase() === itemKey);
-
-  // If item exists, check dealer duplication
-  if(existingItemKey){
-    const dealerExists = groceries[existingItemKey]
-      .some(d => d.dealer.toLowerCase() === dealerKey);
-
-    if(dealerExists){
-      alert(
-        `Item "${existingItemKey}" with dealer "${dealer}" already exists.\n` +
-        `Please edit the price instead of adding again.`
-      );
-      newItemDealer.focus();
-      return;
-    }
+  if(trtype.value==="CASH"){
+    cashBox.style.display="block";
+    amount.readOnly=true;
+    amount.classList.add("cash-grey");
+    return;
   }
 
-  // ✅ Allowed: new item OR new dealer for existing item
-  save(
-    {
-      action: "add",
-      item: itemName,
-      dealer,
-      price
-    },
-    () => {
-      if(existingItemKey){
-        groceries[existingItemKey].push({
-          dealer,
-          price,
-          updated: Date.now()
-        });
-        cancelForms();
-        selectItem(existingItemKey);
-      } else {
-        groceries[itemName] = [{
-          dealer,
-          price,
-          updated: Date.now()
-        }];
-        cancelForms();
-        selectItem(itemName);
-      }
-    }
-  );
-}
-function addDealer(){
-  const d=dealerName.value,p=Number(dealerPrice.value);
-  if(!d||isNaN(p))return;
-  save({action:"add",item:selectedItem,dealer:d,price:p},()=>{groceries[selectedItem].push({dealer:d,price:p,updated:Date.now()});cancelForms();selectItem(selectedItem);});
-}
-function editDealer(dealer,old){
-  const p=Number(prompt("New price:",old));
-  if(isNaN(p))return;
-  save({action:"update",item:selectedItem,dealer,price:p},()=>{groceries[selectedItem].forEach(x=>{if(x.dealer===dealer){x.price=p;x.updated=Date.now();}});selectItem(selectedItem);});
-}
-function deleteDealer(dealer){
-  if(!confirm("Delete dealer?"))return;
-  save({action:"delete",item:selectedItem,dealer},()=>{groceries[selectedItem]=groceries[selectedItem].filter(x=>x.dealer!==dealer);selectItem(selectedItem);});
-}
-function deleteItem(){
-  if(!confirm("Delete item?"))return;
-  save({action:"deleteItem",item:selectedItem},()=>{delete groceries[selectedItem];selectedItem="";details.classList.add("hidden");addDealerBtn.classList.add("hidden");itemInput.value="";});
-}
-function cancelForms(){
-  addItemBox.classList.add("hidden"); addDealerBox.classList.add("hidden"); exitFormMode();
-  newItemName.value=newItemDealer.value=newItemPrice.value=dealerName.value=dealerPrice.value="";
-  dealerSug1.innerHTML=""; dealerSug2.innerHTML="";
+  let list=[];
+  if(["UPI","NET","DEBIT"].includes(trtype.value)) list=bankAccounts;
+  if(trtype.value==="CREDIT") list=creditCards;
+  if(trtype.value==="REWARDS") list=rewards;
+
+  if(list.length){
+    fromToLbl.style.display="block";
+    fromTo.style.display="block";
+    fromTo.innerHTML="<option value=''>Select</option>";
+    list.forEach(v=>fromTo.innerHTML+=`<option>${v}</option>`);
+  }
+};
+
+fromTo.onchange=()=>{
+  rewardOther.style.display=(trtype.value==="REWARDS"&&fromTo.value==="OTHER")?"block":"none";
+};
+
+document.addEventListener("input",e=>{
+  if(e.target.dataset.d){
+    let t=0;
+    document.querySelectorAll("[data-d]").forEach(i=>{
+      t+=Number(i.dataset.d)*(Number(i.value)||0);
+    });
+    amount.value=t;
+  }
+});
+
+form.onsubmit=e=>{
+  e.preventDefault();
+
+  const missing=[];
+  if(!date.value) missing.push("Date");
+  if(!narration.value) missing.push("Narration");
+  if(!purpose.value) missing.push("Purpose");
+  if(purpose.value==="Other"&&!purposeOther.value) missing.push("Other Purpose");
+  if(!spentFor.value) missing.push("Spent For / Earned By");
+  if(spentFor.value==="Other"&&!spentOther.value) missing.push("Other Name");
+  if(!flow_type.value) missing.push("Transaction Flow");
+  if(!trtype.value) missing.push("Transaction Type");
+  if(trtype.value!=="CASH"&&!fromTo.value) missing.push("From / To");
+  if(trtype.value==="REWARDS"&&fromTo.value==="OTHER"&&!rewardOther.value) missing.push("Reward Source");
+  if(!amount.value||Number(amount.value)<=0) missing.push("Amount");
+
+  if(missing.length){
+    alert("Please fill the following fields:\n\n• "+missing.join("\n• "));
+    return;
+  }
+
+  popupText.innerHTML=`
+    <b>Category:</b> Monthly Transaction<br>
+    <b>Date:</b> ${date.value}<br>
+    <b>Purpose:</b> ${purpose.value==="Other"?purposeOther.value:purpose.value}<br>
+    <b>Spent For / Earned By:</b> ${spentFor.value==="Other"?spentOther.value:spentFor.value}<br>
+    <b>Flow:</b> ${flow_type.value}<br>
+    <b>Type:</b> ${trtype.value}<br>
+    <b>From/To:</b> ${trtype.value==="CASH"?"Cash":(fromTo.value==="OTHER"?rewardOther.value:fromTo.value)}<br>
+    <b>Amount:</b> ₹${amount.value}
+  `;
+
+  popupDenoms.innerHTML="";
+  if(trtype.value==="CASH"){
+    popupDenoms.innerHTML="<h4>Cash Denominations</h4><div class='popup-grid'></div>";
+    const g=popupDenoms.querySelector(".popup-grid");
+    denoms.forEach(d=>{
+      const c=document.querySelector(`[data-d="${d}"]`).value||0;
+      g.innerHTML+=`<div class="popup-card">₹${d}<br>${c}</div>`;
+    });
+  }
+
+  popup.style.display="flex";
+};
+
+async function send(){
+  const cash={};
+  document.querySelectorAll("[data-d]").forEach(i=>cash[i.dataset.d]=Number(i.value)||0);
+
+  await fetch("https://hook.eu1.make.com/uayw6m2h1u56gz1fuhnyewvh860q8tjy",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      category:"monthly_transaction",
+      date:date.value,
+      narration:narration.value,
+      purpose:purpose.value==="Other"?purposeOther.value:purpose.value,
+      spent_for:spentFor.value==="Other"?spentOther.value:spentFor.value,
+      flow_type:flow_type.value,
+      trtype:trtype.value,
+      from_to:trtype.value==="CASH"?"Cash":(fromTo.value==="OTHER"?rewardOther.value:fromTo.value),
+      amount:amount.value,
+      denominations:cash
+    })
+  });
+
+  popup.style.display="none";
+  alert("Transaction saved");
+  form.reset();
+  cashBox.style.display="none";
 }
 </script>
 
