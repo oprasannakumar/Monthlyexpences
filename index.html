@@ -48,9 +48,9 @@ button:hover{background:#0056b3}
 <div class="menu-container">
   <div class="menu-btn">⋮</div>
   <div class="menu-dropdown">
-    <a href="https://oprasannakumar.github.io/Financial-Transaction/" >Financial Entries</a>
-    <a href="https://oprasannakumar.github.io/SelfTransfer/" >Self Transfer</a>
-    <a href="https://oprasannakumar.github.io/LoanTransfer/" >Loan Entries</a>
+    <a href="https://oprasannakumar.github.io/Financial-Transaction/">Financial Entries</a>
+    <a href="https://oprasannakumar.github.io/SelfTransfer/">Self Transfer</a>
+    <a href="https://oprasannakumar.github.io/LoanTransfer/">Loan Entries</a>
   </div>
 </div>
 
@@ -61,6 +61,9 @@ button:hover{background:#0056b3}
 
 <label>Narration</label>
 <input type="text" id="narration">
+
+<label>Bill No (Optional)</label>
+<input type="text" id="billNo" placeholder="Enter bill number">
 
 <label>Purpose</label>
 <select id="purpose">
@@ -146,7 +149,7 @@ button:hover{background:#0056b3}
 
 <script>
 const bankAccounts=["FI","HDFC Old","HDFC New","ICICI","IndusInd","Kotak","RBL","SBI"];
-const creditCards = [
+const creditCards=[
   "Axis Flipkart","Axis MyZone","Axis Neo",
   "HDFC PhonePe","HDFC Tata Neu","HDFC Millennia",
   "HSBC","IDFC First Millenia",
@@ -155,7 +158,6 @@ const creditCards = [
   "Yes Finbooster","Kotak League","Kotak Image",
   "SBI BPCL","Standard Chartered"
 ];
-
 const rewards=["PHONEPE","AMAZON","FLIPKART","OTHER"];
 const denoms=[500,200,100,50,20,10,5,2,1];
 
@@ -237,8 +239,9 @@ form.onsubmit=e=>{
   }
 
   popupText.innerHTML=`
-    <b>Category:</b> Monthly Transaction<br>
     <b>Date:</b> ${date.value}<br>
+    <b>Narration:</b> ${narration.value}<br>
+    <b>Bill No:</b> ${billNo.value||"-"}<br>
     <b>Purpose:</b> ${purpose.value==="Other"?purposeOther.value:purpose.value}<br>
     <b>Spent For / Earned By:</b> ${spentFor.value==="Other"?spentOther.value:spentFor.value}<br>
     <b>Flow:</b> ${flow_type.value}<br>
@@ -271,6 +274,7 @@ async function send(){
       category:"monthly_transaction",
       date:date.value,
       narration:narration.value,
+      bill_no: billNo.value || "",
       purpose:purpose.value==="Other"?purposeOther.value:purpose.value,
       spent_for:spentFor.value==="Other"?spentOther.value:spentFor.value,
       flow_type:flow_type.value,
