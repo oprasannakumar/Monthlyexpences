@@ -290,7 +290,11 @@ async function send(){
   popup.style.display="none";
   alert("Transaction saved");
   form.reset();
-  cashBox.style.display="none";
+
+/* ✅ Always reset date to today */
+date.value = new Date().toISOString().split("T")[0];
+
+cashBox.style.display="none";
 }
 </script>
 
